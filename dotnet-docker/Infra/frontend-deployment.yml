@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storefrontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: storefrontend
+  template:
+    metadata:
+      labels:
+        app: storefrontend
+    spec:
+      containers:
+        - name: storefrontend
+          image: nathanseixeiro/store:v2
+          ports:
+            - containerPort: 80
+          env:
+            - name: PRODUCTS_URL
+              value: http://productsbackend:80
+            - name: ProductEndpoint
+              value: http://productsbackend
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storefrontend
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 32002
+  selector:
+    app: storefrontend
